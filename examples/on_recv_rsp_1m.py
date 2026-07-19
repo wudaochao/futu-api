@@ -11,7 +11,7 @@ class CurKlineTest(CurKlineHandlerBase):
 quote_ctx = OpenQuoteContext(host='127.0.0.1', port=11111)
 handler = CurKlineTest()
 quote_ctx.set_handler(handler)  # 设置实时K线回调
-ret, data = quote_ctx.subscribe(['US.AAPL'], [SubType.K_15M], session=Session.ALL)   # 订阅 K 线数据类型，OpenD 开始持续收到服务器的推送
+ret, data = quote_ctx.subscribe(['HK.00700'], [SubType.K_1M], session=Session.ALL)   # 订阅 K 线数据类型，OpenD 开始持续收到服务器的推送
 if ret == RET_OK:
     print(data)
 else:

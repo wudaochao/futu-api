@@ -8,11 +8,12 @@ class RTDataTest(RTDataHandlerBase):
             print("RTDataTest: error, msg: %s" % data)
             return RET_ERROR, data
         print("RTDataTest ", data) # RTDataTest 自己的处理逻辑
+        print(data["close"][0])
         return RET_OK, data
 quote_ctx = OpenQuoteContext(host='127.0.0.1', port=11111)
 handler = RTDataTest()
 quote_ctx.set_handler(handler)  # 设置实时分时推送回调
-ret, data = quote_ctx.subscribe(['US.MRVL'], [SubType.K_1M], session=Session.ALL) # 订阅分时类型，OpenD 开始持续收到服务器的推送
+ret, data = quote_ctx.subscribe(['SH.688981'], [SubType.RT_DATA], session=Session.ALL) # 订阅分时类型，OpenD 开始持续收到服务器的推送
 if ret == RET_OK:
     print(data)
 else:
