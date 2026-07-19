@@ -25,6 +25,16 @@ def get_lastest_boll(code, period):
 
     return None, None, None, None
 
+def get_lastest_close(code, period):
+    code_map = last_indicator_map.get(code)
+    if code_map is not None:
+        period_map = code_map.get(period)
+        if period_map is not None:
+            return period_map.get("TIME"), period_map.get("CLOSE")
+
+    return None, None
+
+
 def add_bbi(bbi_map, code, period, time, bbi):
     code_map = bbi_map.get(code)
     if code_map is None:
@@ -54,6 +64,28 @@ def add_boll(boll_map, code, period, time, mid, upper, lower):
     period_map["MID"] = mid
     period_map["UPPER"] = upper
     period_map["LOWER"] = lower
+
+def add_close(close_map, code, period, time, close):
+    code_map = close_map.get(code)
+    if code_map is None:
+        code_map = dict()
+        close_map[code] = code_map
+
+    period_map = code_map.get(period)
+    if period_map is None:
+        period_map = dict()
+        code_map[period] = period_map
+
+    last_time, last_close = period_map.get("TIME"), period_map.get("CLOSE")
+    if last_time is not None and last_close is not None:
+        #ylog.debug(f"CLOSE for '{code} {period}' is updated: {last_time} > {time} {last_close:.2f} > {close:.2f}")
+        if last_time != time and last_close != close:
+            ylog.debug(f"CLOSE for '{code} {period}' is updated: {time} {close:.2f}")
+    else:
+        ylog.debug(f"CLOSE for '{code} {period}' is added: {time} {close:.2f}")
+
+    period_map["TIME"] = time
+    period_map["CLOSE"] = close
 
 def create_indicator_map(group, code):
     hour_period = KLType.K_120M
@@ -247,6 +279,7 @@ def update_indicator(quote_ctx):
                     return
 
                 #self.close_price_map[period][code] = kl_data["close"].iloc[-1]
+                add_close(last_indicator_map, code, period, kl_data["time_key"].iloc[-1], kl_data["close"].iloc[-1])
 
                 for indicator_name, calc_map in (
                         ("BOLL", calc_boll_map),
