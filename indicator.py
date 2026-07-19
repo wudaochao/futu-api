@@ -168,7 +168,7 @@ def request_indicator_cb(content):
         # last_lower = last_indicator_map[code][period]["BOLL"]["LOWER"]
         last_time, last_mid, last_upper, last_lower = get_lastest_boll(code, period)
         if last_time is not None and last_mid is not None and last_time == time:
-            ylog.debug(f"BOLL for '{code} {period}' is already newest: {last_time} {last_mid:.2f} {last_upper:.2f} {last_lower:.2f}")
+            #ylog.debug(f"BOLL for '{code} {period}' is already newest: {last_time} {last_mid:.2f} {last_upper:.2f} {last_lower:.2f}")
             return
 
         mid = 2 * newest["values"][0] - latest["values"][0]
@@ -203,7 +203,7 @@ def request_indicator_cb(content):
         # last_bbi = last_indicator_map[code][period]["BBI"]
         last_time, last_bbi = get_lastest_bbi(code, period)
         if last_time is not None and last_bbi is not None and last_time == time:
-            ylog.debug(f"BBI for '{code} {period}' is already newest: {last_time} {last_bbi:.2f}")
+            #ylog.debug(f"BBI for '{code} {period}' is already newest: {last_time} {last_bbi:.2f}")
             return
 
         bbi = 2 * newest["values"][0] - latest["values"][0]

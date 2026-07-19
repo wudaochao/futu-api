@@ -9,6 +9,14 @@ group_map = dict({"指标": [], "分": [], "时": [], "周": [], "月": [], "季
 def new_group():
     return dict({"指标": [], "分": [], "时": [], "周": [], "月": [], "季": []})
 
+def get_all_groups():
+    code_list = []
+    for group_name in group_map:
+        for code in group_map[group_name]:
+            code_list.append(code)
+
+    return code_list
+
 def get_periods_by_group_name(code, group_name):
     hour_period = KLType.K_120M
     if code.startswith(("HK.", "US.")):
