@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 DEFAULT_LOG_DIR = "logs"
-DEFAULT_LOG_FORMAT = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+DEFAULT_LOG_FORMAT = "%(asctime)s [%(levelname)s] %(funcName)s: %(message)s"
 DEFAULT_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
@@ -20,13 +20,13 @@ _LEVEL_NAMES = {
 logger = logging.getLogger()
 
 def info(msg):
-    logger.log(logging.INFO, msg)
+    logger.log(logging.INFO, msg, stacklevel=2)
 def warning(msg):
-    logger.log(logging.WARNING, msg)
+    logger.log(logging.WARNING, msg, stacklevel=2)
 def error(msg):
-    logger.log(logging.ERROR, msg)
+    logger.log(logging.ERROR, msg, stacklevel=2)
 def debug(msg):
-    logger.log(logging.DEBUG, msg)
+    logger.log(logging.DEBUG, msg, stacklevel=2)
 
 
 class MaxLevelFilter(logging.Filter):

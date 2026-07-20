@@ -25,6 +25,24 @@ def get_lastest_boll(code, period):
 
     return None, None, None, None
 
+def get_bbi(code, period):
+    code_map = indicator_map.get(code)
+    if code_map is not None:
+        period_map = code_map.get(period)
+        if period_map is not None:
+            return period_map.get("TIME"), period_map.get("BBI")
+
+    return None, None
+
+def get_boll(code, period):
+    code_map = indicator_map.get(code)
+    if code_map is not None:
+        period_map = code_map.get(period)
+        if period_map is not None:
+            return period_map.get("TIME"), period_map.get("MID"), period_map.get("UPPER"), period_map.get("LOWER")
+
+    return None, None, None, None
+
 def get_lastest_close(code, period):
     code_map = last_indicator_map.get(code)
     if code_map is not None:
@@ -210,52 +228,8 @@ def request_indicator_cb(content):
         add_bbi(indicator_map, code, period, time, bbi)
         last_time, last_bbi = time, newest["values"][0]
         add_bbi(last_indicator_map, code, period, last_time, last_bbi)
-        # indicator_map[code][period]["BBI"] = bbi
-        # last_indicator_map[code][period]["BBI"] = newest["values"][0]
-        # last_indicator_map[code][period]["TIME"] = time
         ylog.info(f"BBI for '{code} {period}' last updated: {last_time} {last_bbi:.2f}")
         ylog.info(f"BBI for '{code} {period}' new updated: {time} {bbi:.2f}")
-
-# def request_indicator(quote_ctx, group, code, period):
-#     #code_tasks = code_tasks or self.indicator_tasks.get(code, set())
-#     for group_name in group_map:
-#         for code in group_map[group_name]:
-#             for period in get_periods_by_group_name(code, group_name):
-#                 start, end = get_kline_date_range(period)
-#                 ret, kl_data, _ = quote_ctx.request_history_kline(
-#                     code,
-#                     start=start,
-#                     end=end,
-#                     ktype=period,
-#                 )
-#                 if ret != RET_OK:
-#                     ylog.error(f"request_history_kline error: code={code}, period={period}, msg={kl_data}")
-#                     continue
-#                 else:
-#                     ylog.debug(f"request_history_kline success: {group_name}: {code} -> {period}")
-#
-#                 if len(kl_data) < 24:
-#                     ylog.warning(f"not enough kline data: {group_name}: {code} -> {period}, len={len(kl_data)}")
-#                     return
-#
-#                 #self.close_price_map[period][code] = kl_data["close"].iloc[-1]
-#
-#                 for indicator_name, calc_map in (
-#                         ("BOLL", calc_boll_map),
-#                         ("BBI", calc_bbi_map),
-#                 ):
-#                     #if (period, indicator_name) not in code_tasks:
-#                     #    continue
-#                     #发起请求
-#                     ret, calc_id = quote_ctx.request_indicator_calc_async(
-#                         indicator_name, IndicatorLangType.MYLANG, code, period, kl_data
-#                     )
-#                     if ret == RET_OK:
-#                         ylog.debug(f"request {indicator_name} success: code={code}, period={period}, calc_id={calc_id}")
-#                         #with self.lock:
-#                         calc_map[calc_id] = (code, period)
-#                     else:
-#                         ylog.error(f"request {indicator_name} error: code={code}, period={period}, error={calc_id}")
 
 def update_indicator(quote_ctx):
     for group_name in group_map:
@@ -297,13 +271,15 @@ def update_indicator(quote_ctx):
                         calc_map[calc_id] = (code, period)
                     else:
                         ylog.error(f"request {indicator_name} error: code={code}, period={period}, error={calc_id}")
-            time.sleep(1)
+
+                #确保每次请求间隔一秒
+                time.sleep(1)
 
 def indicator_loop(quote_ctx):
     #time.sleep(60)
 
     while True:
-        ylog.warning("indicator loop start")
+        ylog.info("indicator loop start")
         update_indicator(quote_ctx)
         time.sleep(60)
 

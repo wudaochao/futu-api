@@ -22,17 +22,21 @@ def get_periods_by_group_name(code, group_name):
     if code.startswith(("HK.", "US.")):
         hour_period = KLType.K_240M
     if group_name == "指标":
-        return [KLType.K_15M, hour_period, KLType.K_WEEK, KLType.K_MON, KLType.K_QUARTER]
+        return {KLType.K_15M: ["BBI", "BOLL"],
+                hour_period: ["BBI", "BOLL"],
+                KLType.K_WEEK: ["BBI", "BOLL"],
+                KLType.K_MON: ["BBI", "BOLL"],
+                KLType.K_QUARTER: ["BBI", "BOLL"]}
     elif group_name == "分":
-        return [KLType.K_15M, hour_period]
+        return {KLType.K_15M: ["BBI", "BOLL"], hour_period: ["BBI"]}
     elif group_name == "时":
-        return [hour_period, KLType.K_WEEK]
+        return {hour_period: ["BBI", "BOLL"], KLType.K_WEEK: ["BBI"]}
     elif group_name == "周":
-        return [KLType.K_WEEK, KLType.K_MON]
+        return {KLType.K_WEEK: ["BBI", "BOLL"], KLType.K_MON: ["BBI"]}
     elif group_name == "月":
-        return [KLType.K_MON, KLType.K_QUARTER]
+        return {KLType.K_MON: ["BBI", "BOLL"], KLType.K_QUARTER: ["BBI"]}
     elif group_name == "季":
-        return [KLType.K_QUARTER]
+        return {KLType.K_QUARTER: ["BBI", "BOLL"], KLType.K_MON: ["BBI"]}
 
     return None
 
@@ -51,7 +55,7 @@ def compare_group(group, new_groups, old_groups):
 
     return flag
 
-def update_group(quote_ctx):
+def update_group(quote_ctx, second=12):
     new_group_map = new_group()
 
     for group in GROUP_NAMES:
@@ -63,6 +67,8 @@ def update_group(quote_ctx):
         else:
             ylog.warning(data)
             return
+
+        time.sleep(second)
 
     """
     比较新旧分组，更新group_map
@@ -89,7 +95,7 @@ def group_loop(quote_ctx):
         time.sleep(300)
 
 def group_init(quote_ctx):
-    update_group(quote_ctx)
+    update_group(quote_ctx, 1)
 
     thread = threading.Thread(target=group_loop, args=(quote_ctx,))
     thread.start()
